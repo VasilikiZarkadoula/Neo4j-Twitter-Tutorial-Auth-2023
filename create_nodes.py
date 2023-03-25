@@ -12,7 +12,7 @@ client.close()
 '''
 
 import pandas as pd
-from py2neo import Graph, Node
+from py2neo import Graph, Node,  Relationship
 import math
 
 df = pd.read_csv("WDM1.csv", low_memory=False)
@@ -28,39 +28,47 @@ unique_users = set()
 
 # Iterate over the rows in the DataFrame and add tags, urls, and tweets to the sets
 for index, row in df.iterrows():
+
     # Get the tags from the row
-    tags = [row.get(f"data.entities.hashtags.{i}.tag") for i in range(0, 25)]
-    urls = [row.get(f"data.entities.urls.{i}.expanded_url") for i in range(0, 3)]
+    tweet_tags = [row.get(f"data.entities.hashtags.{i}.tag") for i in range(0, 25)]
+    user_tags = [row.get(f"includes.users.0.entities.description.hashtags.{i}.tag") for i in range(0, 13)]
+
+    # Get the urls from the row
+    tweet_urls = [row.get(f"data.entities.urls.{i}.expanded_url") for i in range(0, 3)]
+    user_urls = [row.get(f"includes.users.0.entities.description.urls.{i}.expanded_url") for i in range(0, 2)]
+
     # Get the tweets from the row
-    tweets = []
-    for i in range(0, 2):
-        tweet = {}
-        tweet["id"] = row.get(f"includes.tweets.{i}.id")
-        tweet["created_at"] = row.get(f"includes.tweets.{i}.created_at")
-        tweet["reply_count"] = row.get(f"includes.tweets.{i}.public_metrics.reply_count")
-        if all(tweet.values()) and not all(math.isnan(v) for v in tweet.values()):  # only add non-empty and non-nan tweets
-            tweets.append(tweet)
+    tweet = dict()
+    tweet["id"] = row.get(f"includes.tweets.0.id")
+    tweet["created_at"] = row.get(f"includes.tweets.0.created_at")
+    tweet["reply_count"] = row.get(f"includes.tweets.0.public_metrics.reply_count")
+    tweet["type"] = row.get(f"includes.tweets.0.referenced_tweets.0.type")
+    tweet["author_id"] = row.get(f"includes.tweets.0.author_id")
 
     # Get the users from the row
-    users = []
-    for i in range(0, 4):
-        user = {}
-        user["id"] = row.get(f"includes.users.{i}.id")
-        user["username"] = row.get(f"includes.users.{i}.username")
-        user["followers_count"] = row.get(f"includes.users.{i}.public_metrics.followers_count")
-        if all(user.values()) and not all(math.isnan(v) for v in user.values()):  # only add non-empty and non-nan tweets
-            users.append(user)
+    user = dict()
+    user["id"] = row.get(f"includes.users.0.id")
+    user["username"] = row.get(f"includes.users.0.username")
+    user["followers_count"] = row.get(f"includes.users.0.public_metrics.followers_count")
 
     # Remove any None or NaN values from the list of tags and urls
-    tags = [str(tag).lower() for tag in tags if isinstance(tag, str)]
-    urls = [url for url in urls if url is not None and url != "nan"]  # exei ena nan pou den exw kataferei na to diwksw
+    tweet_tags = [str(tag).lower() for tag in tweet_tags if isinstance(tag, str)]
+    user_tags = [str(tag).lower() for tag in user_tags if isinstance(tag, str)]
+
+    tweet_urls = [str(url) for url in tweet_urls if isinstance(url, str)]
+    user_urls = [str(url) for url in user_urls if isinstance(url, str)]
+
 
     # Add the lists to the sets
-    unique_tags.update(tags)
-    unique_urls.update(urls)
-    # Add the tweets as a hashable tuple to the set
-    unique_tweets.update([tuple(sorted(tweet.items())) for tweet in tweets])
-    unique_users.update([tuple(sorted(user.items())) for user in users])
+    unique_tags.update(tweet_tags)
+    unique_tags.update(user_tags)
+
+    unique_urls.update(tweet_urls)
+    unique_urls.update(user_urls)
+
+    # Convert the dictionary to a frozenset before adding to the set to make it hashable
+    unique_tweets.add(frozenset(tweet.items()))
+    unique_users.add(frozenset(user.items()))
 
 
 # Create a node for each tag
@@ -77,7 +85,8 @@ for url in unique_urls:
 for tweet in unique_tweets:
     # Convert the hashable tuple back to a dictionary
     tweet_dict = dict(tweet)
-    node = Node("Tweet", id=tweet_dict["id"], created_at=tweet_dict["created_at"], reply_count=tweet_dict["reply_count"])
+    node = Node("Tweet", id=tweet_dict["id"], created_at=tweet_dict["created_at"], reply_count=tweet_dict["reply_count"]
+                , type=tweet_dict["type"], author_id=tweet_dict["author_id"])
     graph.create(node)
 
 # Create a node for each user
@@ -86,3 +95,8 @@ for user in unique_users:
     user_dict = dict(user)
     node = Node("User", id=user_dict["id"], username=user_dict["username"], followers_count=user_dict["followers_count"])
     graph.create(node)
+
+
+
+
+
