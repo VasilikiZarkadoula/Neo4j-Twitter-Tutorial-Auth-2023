@@ -45,7 +45,6 @@ for index, row in df.iterrows():
             mentions_id = row.get(f"data.entities.mentions.{j}.id")
             if(not pd.isna(mentions_id) and not pd.isnull(mentions_id)):
                 if(not pd.isna(mentions_username) and not pd.isnull(mentions_username)):
-                    node = Node("User", id=mentions_id, username=mentions_username)
                     mentionCreate = graph.run("MERGE (u:User {id: $id1}) ON CREATE SET u.id = $id1, u.username = $name1 RETURN u",id1 = str(mentions_id), name1 = str(mentions_username)).data()
                 else:
                     mentionCreate = graph.run("MERGE (u:User {id: $id1}) ON CREATE SET u.id = $id1 RETURN u;",id1 = str(mentions_id)).data()
