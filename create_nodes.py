@@ -94,7 +94,7 @@ for user in unique_users:
     # Convert the hashable tuple back to a dictionary
     user_dict = dict(user)
     node = Node("User", id=user_dict["id"], username=user_dict["username"], followers_count=user_dict["followers_count"])
-    graph.create(node)
+    graph.merge(node, "User", "id")
 
 
 
