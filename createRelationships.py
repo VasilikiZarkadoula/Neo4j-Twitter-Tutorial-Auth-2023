@@ -51,13 +51,13 @@ for index, row in df.iterrows():
                 mentionRel = graph.run("MATCH (u1:User),(u2:User) WHERE u1.id = $user1Id and u2.id = $user2Id MERGE (u1)-[r:MENTIONS]->(u2) return count(r)",user1Id = user["id"], user2Id = mentions_id).data()
 
 print("tweet begin")
-graph.run("MATCH (u: User),(t: Tweet) WHERE u.id = t.author_id and t.type<> 'retweeted' and t.type<> 'quoted' and t.type<> 'replied_to' CREATE (u)-[r:TWEETED]->(t) return count(r)")
+graph.run("MATCH (u: User),(t: Tweet) WHERE u.id = t.author_id and t.type<> 'retweeted' and t.type<> 'quoted' and t.type<> 'replied_to' MERGE (u)-[r:TWEETED]->(t) return count(r)")
 
 print("retweet begin")
-graph.run("MATCH (u: User),(t: Tweet) WHERE u.id = t.author_id and t.type = 'retweeted' CREATE (u)-[r:RETWEETED]->(t) return count(r)")
+graph.run("MATCH (u: User),(t: Tweet) WHERE u.id = t.author_id and t.type = 'retweeted' MERGE (u)-[r:RETWEETED]->(t) return count(r)")
 
 print("quote begin")
-graph.run("MATCH (u: User),(t: Tweet) WHERE u.id = t.author_id and t.type = 'quoted' CREATE (u)-[r:QUOTED]->(t) return count(r)")
+graph.run("MATCH (u: User),(t: Tweet) WHERE u.id = t.author_id and t.type = 'quoted' MERGE (u)-[r:QUOTED]->(t) return count(r)")
 
 print("reply begin")
-graph.run("MATCH (u: User),(t: Tweet) WHERE u.id = t.author_id and t.type = 'replied_to' CREATE (u)-[r:REPLIED_TO]->(t) return count(r)")
+graph.run("MATCH (u: User),(t: Tweet) WHERE u.id = t.author_id and t.type = 'replied_to' MERGE (u)-[r:REPLIED_TO]->(t) return count(r)")
