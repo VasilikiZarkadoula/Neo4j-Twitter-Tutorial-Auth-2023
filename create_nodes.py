@@ -12,10 +12,9 @@ client.close()
 '''
 
 import pandas as pd
-from py2neo import Graph, Node,  Relationship
-import math
+from py2neo import Graph, Node
 
-df = pd.read_csv("WDM1.csv", low_memory=False)
+df = pd.read_csv("WDM1.csv", low_memory=False).astype(str)
 
 # Connect to the Neo4j database
 graph = Graph("bolt://localhost:7687", auth=("neo4j", "twitterdb"))
