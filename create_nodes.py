@@ -12,12 +12,13 @@ client.close()
 '''
 
 import pandas as pd
-from py2neo import Graph, Node
+from py2neo import Graph, Node,  Relationship
+import math
 
-df = pd.read_csv("WDM1.csv", low_memory=False).astype(str)
+df = pd.read_csv("C:/Users/Paris/Documents/WebMining/WDM1.csv", low_memory=False)
 
 # Connect to the Neo4j database
-graph = Graph("bolt://localhost:7687", auth=("neo4j", "twitterdb"))
+graph = Graph("bolt://localhost:7687",auth=("neo4j","34599513"))
 
 # Create sets to store unique tags, urls and tweets
 unique_tags = set()
@@ -38,16 +39,16 @@ for index, row in df.iterrows():
 
     # Get the tweets from the row
     tweet = dict()
-    tweet["id"] = row.get(f"includes.tweets.0.id")
+    tweet["id"] = str(row.get(f"includes.tweets.0.id"))
     tweet["created_at"] = row.get(f"includes.tweets.0.created_at")
     tweet["reply_count"] = row.get(f"includes.tweets.0.public_metrics.reply_count")
-    tweet["type"] = row.get(f"includes.tweets.0.referenced_tweets.0.type")
-    tweet["author_id"] = row.get(f"includes.tweets.0.author_id")
+    tweet["type"] = str(row.get(f"includes.tweets.0.referenced_tweets.0.type"))
+    tweet["author_id"] = str(row.get(f"includes.tweets.0.author_id"))
 
     # Get the users from the row
     user = dict()
-    user["id"] = row.get(f"includes.users.0.id")
-    user["username"] = row.get(f"includes.users.0.username")
+    user["id"] = str(row.get(f"includes.users.0.id"))
+    user["username"] = str(row.get(f"includes.users.0.username"))
     user["followers_count"] = row.get(f"includes.users.0.public_metrics.followers_count")
 
     # Remove any None or NaN values from the list of tags and urls
@@ -70,7 +71,7 @@ for index, row in df.iterrows():
     unique_users.add(frozenset(user.items()))
 
 
-# Create a node for each tag
+#Create a node for each tag
 for tag in unique_tags:
     node = Node("Hashtag", tag=tag)
     graph.create(node)
@@ -94,8 +95,3 @@ for user in unique_users:
     user_dict = dict(user)
     node = Node("User", id=user_dict["id"], username=user_dict["username"], followers_count=user_dict["followers_count"])
     graph.merge(node, "User", "id")
-
-
-
-
-
