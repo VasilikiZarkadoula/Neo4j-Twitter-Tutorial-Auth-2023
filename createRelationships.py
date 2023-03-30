@@ -33,12 +33,12 @@ for index, row in df.iterrows():
             tag = str(row.get(f"includes.users.0.entities.description.hashtags.{j}.tag"))
             if(not pd.isna(tag) and not pd.isnull(tag) and tag != "nan"):
                 tag = tag.lower()
-                tagRel = graph.run("MATCH (h: Hashtag),(u: User) WHERE h.tag = $tag1 and u.id = $userId CREATE (u)-[r:USED_HASHTAG]->(h) return count(r)",tag1 = tag, userId = user["id"]).data()
+                tagRel = graph.run("MATCH (h: Hashtag),(u: User) WHERE h.tag = $tag1 and u.id = $userId MERGE (u)-[r:USED_HASHTAG]->(h) return count(r)",tag1 = tag, userId = user["id"]).data()
 
         for j in range(0,2):
             url = str(row.get(f"includes.users.0.entities.description.urls.{j}.expanded_url"))
             if(not pd.isna(url) and not pd.isnull(url) and url != "nan"):
-                urlRel = graph.run("MATCH (l: Link),(u: User) WHERE l.url = $url1 and u.id = $userId CREATE (u)-[r:USED_URL]->(l) return count(r)",url1 = url, userId = user["id"]).data()
+                urlRel = graph.run("MATCH (l: Link),(u: User) WHERE l.url = $url1 and u.id = $userId MERGE (u)-[r:USED_URL]->(l) return count(r)",url1 = url, userId = user["id"]).data()
 
         for j in range(0,6):
             mentions_username = str(row.get(f"data.entities.mentions.{j}.username"))
