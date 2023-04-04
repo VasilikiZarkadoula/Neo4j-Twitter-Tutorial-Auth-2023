@@ -7,3 +7,14 @@ A. Installing and setting up Neo4j
 B. Population of the Neo4j graph model with the tweets that have been collected in Python
 
 C. Performing queries that produce answers to various questions 
+
+
+Aristotle Univeristy of Thessaloniki (AUTh)
+
+Web Mining Course
+
+Kyriaki Potamopoulou
+
+Vasiliki Zarkadoula
+
+Vasilis Daoulas
