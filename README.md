@@ -8,7 +8,6 @@ B. Population of the Neo4j graph model with the tweets that have been collected 
 
 C. Performing queries that produce answers to various questions 
 
-
-Aristotle Univeristy of Thessaloniki (AUTh) - Web Mining Course
-
+<br /> <br />
+Aristotle Univeristy of Thessaloniki (AUTh) - Web Mining Course <br />
 Authors: Kyriaki Potamopoulou, Vasiliki Zarkadoula, Vasilis Daoulas
