@@ -6,7 +6,9 @@ A. Installing and setting up Neo4j
 
 B. Population of the Neo4j graph model with the tweets that have been collected in Python
 
-C. Performing queries that produce answers to various questions 
+C. Performing queries that produce answers to various questions  <br />
+
+The data model that we used to represent our Twitter data in Neo4j is depicted in the figure below
 
 <br /> <br />
 Aristotle Univeristy of Thessaloniki (AUTh) <br /> Web Mining Course <br /> Authors: Kyriaki Potamopoulou, Vasiliki Zarkadoula, Vasilis Daoulas
